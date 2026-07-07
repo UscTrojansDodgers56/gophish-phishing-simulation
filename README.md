@@ -75,7 +75,7 @@ Aggregate counts only — no captured data.
 
 ---
 
-## Part 2 — Detect the Campaign (Detect → Analyze → Correlate → Harden → Validate)
+## Part 2 — Detect the Campaign (Detect, Analyze, Correlate, Harden, Validate)
 
 | Phase | What I did |
 |---|---|
