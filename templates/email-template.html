@@ -1,0 +1,27 @@
+<!--
+  LAB ONLY. Educational artifact from a personal phishing-simulation lab.
+  Sent only to a self-owned test mailbox. No real people were targeted.
+  {{.URL}} and {{.TrackingURL}} are GoPhish template variables — this file
+  contains NO real attacker infrastructure and is not deployable as-is.
+  SOC Detection Series, Lab 6. Author: Sean White.
+-->
+<html>
+<head></head>
+<body>
+  <p>Hello,</p>
+
+  <p>Our records indicate that your account password is set to expire within
+  24 hours. To avoid disruption to your account access, please reset your
+  password using the secure link below.</p>
+
+  <p><a href="{{.URL}}">Reset My Password</a></p>
+
+  <p>If you do not reset your password before it expires, you may be temporarily
+  locked out of your account until IT support can assist you.</p>
+
+  <img src="{{.TrackingURL}}" alt="" width="1" height="1" />
+
+  <p>Thank you,<br>
+  IT Support Team</p>
+</body>
+</html>
