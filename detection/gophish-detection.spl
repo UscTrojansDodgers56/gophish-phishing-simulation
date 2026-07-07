@@ -1,0 +1,55 @@
+# ============================================================
+# GoPhish Phishing Simulation — Splunk Detection
+# SOC Detection Series, Lab 6. Personal lab.
+# Source: GoPhish access log, forwarded off the attacker VM,
+#         ingested under a custom sourcetype (gophish_access).
+# Author: Sean White
+# ============================================================
+
+# ------------------------------------------------------------
+# 1. RAW EVENTS — confirm ingestion and see the three stages
+# ------------------------------------------------------------
+# The send event, the landing-page GET (open+click), and the
+# credential POST all land under one sourcetype. This is the
+# baseline search everything below builds on.
+
+sourcetype=gophish_access "Email sent" OR "rid="
+
+
+# ------------------------------------------------------------
+# 2. TIME-TO-COMPROMISE v1 — keyed on rid (UNDERCOUNTS)
+# ------------------------------------------------------------
+# Returned 7 seconds — wrong. The "Email sent" event carries no
+# rid, so keying on rid drops it and only measures click -> submit.
+# Left here on purpose: the failure is the lesson. The join key
+# decides what you measure.
+
+sourcetype=gophish_access "Email sent" OR "rid="
+| rex field=_raw "rid=(?<rid>\w+)"
+| rex field=_raw "\"(?<method>GET|POST) "
+| eval stage=case(match(_raw, "Email sent"), "Sent", method=="GET", "Opened/Clicked", method=="POST", "Submitted")
+| stats earliest(_time) as first_seen, latest(_time) as last_seen, values(stage) as stages by rid
+| eval time_to_compromise=last_seen-first_seen
+| convert ctime(first_seen) ctime(last_seen)
+| table rid, stages, first_seen, last_seen, time_to_compromise
+
+
+# ------------------------------------------------------------
+# 3. TIME-TO-COMPROMISE v2 — keyed on target email (CORRECT)
+# ------------------------------------------------------------
+# Coalescing on the target email pulls the "Email sent" event
+# back into scope, so the timeline spans send -> submit.
+# Reports 61s because it anchors one second early on a dashboard
+# poll; the true send->submit gap is exactly 60s (17:18:32 ->
+# 17:19:32). Documented, not hand-waved.
+
+sourcetype=gophish_access "Email sent" OR "rid="
+| rex field=_raw "rid=(?<rid>\w+)"
+| rex field=_raw "\"(?<method>GET|POST) "
+| rex field=_raw "email=\"[^<]*<(?<sent_email>[^>]+)>\""
+| eval stage=case(match(_raw, "Email sent"), "Sent", method=="GET", "Opened/Clicked", method=="POST", "Submitted")
+| eval target_email=coalesce(sent_email, "user1@lab.local")
+| stats earliest(_time) as first_seen, latest(_time) as last_seen, values(stage) as stages by target_email
+| eval time_to_compromise=last_seen-first_seen
+| convert ctime(first_seen) ctime(last_seen)
+| table target_email, stages, first_seen, last_seen, time_to_compromise
