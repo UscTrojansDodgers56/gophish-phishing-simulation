@@ -1,0 +1,24 @@
+<!-- LAB ONLY. Capture endpoint removed. Educational artifact, not deployable. -->
+<!--
+  Personal phishing-simulation lab. This page originally captured submitted
+  values to a local, self-owned GoPhish instance on a NAT'd VM — never exposed
+  to the internet, never used against a real person.
+  The capture/POST action has been NEUTRALIZED for public publication:
+  action="#LAB-ONLY-CAPTURE-DISABLED". This file cannot harvest credentials.
+  SOC Detection Series, Lab 6. Author: Sean White.
+-->
+<html>
+<head><title>Account Password Reset</title></head>
+<body style="font-family: Arial, sans-serif; text-align: center; margin-top: 80px;">
+  <h2>Reset Your Password</h2>
+  <p>Please enter your credentials below to continue.</p>
+
+  <!-- Capture action removed. In the lab this posted to the local GoPhish server;
+       here it points to a dead anchor so nothing is submitted anywhere. -->
+  <form method="post" action="#LAB-ONLY-CAPTURE-DISABLED" onsubmit="return false;">
+    <input type="text" name="username" placeholder="Username" style="padding:8px; width:250px; margin-bottom:10px;"><br>
+    <input type="password" name="password" placeholder="Password" style="padding:8px; width:250px; margin-bottom:10px;"><br>
+    <button type="submit" style="padding:8px 20px;">Reset Password</button>
+  </form>
+</body>
+</html>
